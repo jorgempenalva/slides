@@ -1,19 +1,6 @@
 ---
-name: slidev-presentations
-description: Generate branded presentations as PDF using Slidev. Auto-detects brand colors from your repo. Trigger with "create a presentation about...", "make slides for...", or "generate a deck on...".
-trigger:
-  keywords:
-    - presentation
-    - slides
-    - generate slides
-    - slide deck
-    - make slides
-    - create a deck
-    - team presentation
-    - internal deck
-  intentPatterns:
-    - "(generate|create|make|build|prepare).*?(presentation|slides|deck)"
-    - "(slides|deck|presentation).*?(about|for|on)"
+name: slides
+description: Generates branded presentations as PDF using Slidev. Auto-detects brand colors from the repo's Tailwind config, CSS variables, or design tokens. Use when asked to create a presentation, make slides, generate a deck, or prepare a slide deck on any topic.
 ---
 
 # Slidev Presentations Skill
@@ -61,19 +48,7 @@ On every presentation request, resolve brand colors before generating slides.
 
 ### Deriving a Full Palette from a Single Color
 
-When the user provides just one primary hex (e.g., `#2196f3`), derive the full palette:
-
-| Key | Derivation |
-|-----|-----------|
-| `primary-light` | Lighten to ~90% luminance (background shade) |
-| `primary-medium` | Lighten to ~60% luminance |
-| `primary` | The given color |
-| `primary-dark` | Darken to ~40% luminance |
-| `heading` | Darken to ~15% luminance (near-black, tinted) |
-| `subheading` | Darken to ~25% luminance |
-| `border` | Neutral gray `#e0e0e0` |
-
-Use HSL manipulation: keep the hue, adjust saturation slightly, and set lightness to the target value.
+When the user provides just one primary hex, derive the full palette by generating light/medium/dark/heading/subheading variants plus a neutral border (`#e0e0e0`).
 
 ---
 
@@ -81,13 +56,7 @@ Use HSL manipulation: keep the hue, adjust saturation slightly, and set lightnes
 
 ### Step 1 — Gather Content
 
-Ask the user (via AskUserQuestion) if not already clear:
-
-| Input | Description | Example |
-|-------|-------------|---------|
-| Title | Presentation title | "Q4 2024 Results" |
-| Content | Key points, topics, or data for slides | bullet points, paragraphs, data |
-| Slide count | Approximate number (optional, default 6-8) | 5-12 |
+Ask the user (via AskUserQuestion) if not already clear: title, key content/topics, and optional slide count (default 6–8).
 
 ### Step 2 — Generate Slidev Markdown
 
@@ -248,18 +217,6 @@ Supporting context below the quote.
 
 ---
 
-## Slide Content Guidelines
-
-- **One main idea per slide** — keep content focused
-- Use Tailwind utilities available in Slidev: `grid`, `flex`, `gap-*`, `pt-*`, `text-*`
-- Title slide is always first
-- Optional closing/thank-you slide at the end
-- Separate slides with `---`
-- Tables: keep to 4-6 rows max for readability
-- Use **bold** for key terms, not for entire sentences
-
----
-
 ## Export Instructions
 
 ### Standard Export
@@ -267,15 +224,6 @@ Supporting context below the quote.
 ```bash
 cd presentations && npx slidev export output/<slug>.md --output ./output/<slug>.pdf
 ```
-
-### Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| `playwright-chromium` not found | Run `npm install` in `presentations/` |
-| Export hangs | Add `--timeout 60000` flag |
-| Fonts not rendering | Add `--wait 3000` for font loading |
-| Slides look wrong | Run `npx slidev output/<slug>.md` to preview in browser first |
 
 ### Output Files
 
