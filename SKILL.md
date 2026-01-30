@@ -1,11 +1,11 @@
 ---
 name: slides
-description: Generates branded presentations as PDF using Slidev. Auto-detects brand colors from the repo's Tailwind config, CSS variables, or design tokens. Use when asked to create a presentation, make slides, generate a deck, or prepare a slide deck on any topic.
+description: Generates branded presentations as PDF using Slidev. Auto-detects brand colors and fonts from the repo's Tailwind config, CSS variables, or design tokens. Use when asked to create a presentation, make slides, generate a deck, or prepare a slide deck on any topic.
 ---
 
 # Slidev Presentations Skill
 
-Generate branded presentations from natural language. Auto-detects brand colors from your repo configuration, generates Slidev markdown, and exports to PDF.
+Generate branded presentations from natural language. Auto-detects brand colors and fonts from your repo configuration, generates Slidev markdown, and exports to PDF.
 
 ## Prerequisites
 
@@ -14,20 +14,24 @@ Generate branded presentations from natural language. Auto-detects brand colors 
 
 ## Brand Discovery
 
-On every presentation request, resolve brand colors before generating slides.
+On every presentation request, resolve brand colors and fonts before generating slides.
 
 ### Resolution Flow
 
-1. **Check `presentations/brand.json`** — if it exists, read and use those colors. Skip to slide generation.
+1. **Check `presentations/brand.json`** — if it exists, read and use those colors and fonts. Skip to slide generation.
 2. **Search the repo** for brand colors in this order:
    a. `tailwind.config.{js,ts,mjs,cjs}` — look in `theme.extend.colors` or `theme.colors` for primary/brand keys
    b. CSS/SCSS files — `:root` blocks with `--brand-*`, `--color-*`, or `--primary-*` custom properties
    c. Design token files — `tokens.json`, `design-tokens.json`, `theme.json`
    d. `package.json` — `theme` or `brand` fields
    e. Any `.claude/skills/*.md` files mentioning hex color codes
-3. **If colors found** — generate `presentations/brand.json` and confirm with the user: "I found these brand colors in [source]. Should I use them?"
-4. **If NOT found** — ask the user: "I couldn't find brand colors in your repo. Where should I get them? (company website, design file, specific file, or just give me a hex code)"
-5. **Save** the resolved palette to `presentations/brand.json`
+3. **Search the repo** for brand fonts in this order:
+   a. `tailwind.config.{js,ts,mjs,cjs}` — look in `theme.extend.fontFamily` or `theme.fontFamily` for `sans` and `mono` keys
+   b. CSS/SCSS files — `font-family` declarations or `--font-*` custom properties
+   c. Design token files — font family definitions
+4. **If colors/fonts found** — generate `presentations/brand.json` and confirm with the user: "I found these brand colors and fonts in [source]. Should I use them?"
+5. **If NOT found** — ask the user: "I couldn't find brand colors in your repo. Where should I get them? (company website, design file, specific file, or just give me a hex code)"
+6. **Save** the resolved palette and fonts to `presentations/brand.json`
 
 ### brand.json Format
 
@@ -42,6 +46,10 @@ On every presentation request, resolve brand colors before generating slides.
     "heading": "#1a237e",
     "subheading": "#283593",
     "border": "#e0e0e0"
+  },
+  "fonts": {
+    "sans": "Inter",
+    "mono": "Fira Mono"
   }
 }
 ```
@@ -49,6 +57,10 @@ On every presentation request, resolve brand colors before generating slides.
 ### Deriving a Full Palette from a Single Color
 
 When the user provides just one primary hex, derive the full palette by generating light/medium/dark/heading/subheading variants plus a neutral border (`#e0e0e0`).
+
+### Default Fonts
+
+If no fonts are found in the repo, omit the `fonts` key from `brand.json` and Slidev will use its theme defaults. When fonts are specified, they are loaded via Google Fonts automatically by Slidev's frontmatter `fonts` configuration.
 
 ---
 
@@ -89,8 +101,13 @@ drawings:
   persist: false
 transition: slide-left
 mdc: true
+fonts:
+  sans: "<fonts.sans>"
+  mono: "<fonts.mono>"
 ---
 ```
+
+If `brand.json` includes a `fonts` key, populate the `fonts` block with those values. If no fonts are configured, omit the `fonts` block entirely and let Slidev use its theme defaults. Slidev loads the specified fonts automatically from Google Fonts.
 
 ---
 
